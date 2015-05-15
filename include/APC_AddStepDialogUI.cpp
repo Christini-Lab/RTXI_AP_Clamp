@@ -10,9 +10,7 @@
  *  The dialog will by default be modeless, unless you set 'modal' to
  *  TRUE to construct a modal dialog.
  */
-AddStepDialog::AddStepDialog( QWidget* parent /*, const char* name, bool modal, WFlags fl*/ ) : QDialog( parent /*, name, modal, fl*/ ) {
-
-std::cout<<"AddStepDialog constructor called"<<std::endl;
+AddStepDialog::AddStepDialog( QWidget* parent  ) : QDialog( parent ) {
 	 QWidget::setAttribute(Qt::WA_DeleteOnClose);
 
     setWindowTitle( "Add Step to Protocol" );
@@ -21,8 +19,13 @@ std::cout<<"AddStepDialog constructor called"<<std::endl;
     stepComboBox = new QComboBox( this );
     stepComboBox->clear();
     stepComboBox->insertItem( 0, tr( "Static Pacing" ) );
-    stepComboBox->insertItem( 1, tr( "Current Scaling" ) );
-    stepComboBox->insertItem( 2, tr( "Wait" ) );
+    stepComboBox->insertItem( 1, tr( "Start: Record Vm" ) );
+    stepComboBox->insertItem( 2, tr( "Stop: Record Vm" ) );
+    stepComboBox->insertItem( 4, tr( "Record Average Vm" ) );
+    stepComboBox->insertItem( 5, tr( "AP Clamp" ) );
+    stepComboBox->insertItem( 6, tr( "Start: Data recorder" ) );
+    stepComboBox->insertItem( 7, tr( "Stop: Data recorder" ) );
+    stepComboBox->insertItem( 8, tr( "Wait" ) );
 
     AddStepDialogLayout->addWidget( stepComboBox );
 
@@ -43,25 +46,23 @@ std::cout<<"AddStepDialog constructor called"<<std::endl;
 	 numBeatsEdit->setValidator( new QIntValidator(0, 10000, numBeatsEdit) );
     layout2->addWidget( numBeatsEdit );
     AddStepDialogLayout->addLayout( layout2 );
+    
+    layout3 = new QHBoxLayout;
+    numIterationsLabel = new QLabel( "Number of Iterations", this );
+    numIterationsLabel->setAlignment( Qt::AlignCenter );
+    layout3->addWidget( numIterationsLabel );
+    numIterationsEdit = new QLineEdit( "", this );
+    numIterationsEdit->setValidator( new QIntValidator(0, 10000, numIterationsEdit) );
+    layout3->addWidget( numIterationsEdit );
+    AddStepDialogLayout->addLayout( layout3 );
 
-    layout3 = new QHBoxLayout; 
-    currentToScaleLabel = new QLabel( "Current to Scale", this );
-    currentToScaleLabel->setAlignment( Qt::AlignCenter );
-    layout3->addWidget( currentToScaleLabel );
-    currentToScaleEdit = new QLineEdit( "", this );
-	 QRegExp currentToScaleRegExp("(INa|IKr|ICaL|IK1|IKs|ICaT|INaK|INCX)");
-	 currentToScaleEdit->setValidator( new QRegExpValidator(currentToScaleRegExp, currentToScaleEdit) );
-    currentToScaleEdit->setToolTip( tr( "Choices: INa, IKr, IKs, ICaL, IK1, ICaT, INaK, or INCX" ) );
-    layout3->addWidget( currentToScaleEdit );
-	 AddStepDialogLayout->addLayout( layout3 );
-
-    layout4 = new QHBoxLayout;  
-    scalingPercentageLabel = new QLabel( "Scaling Percentage", this );
-    scalingPercentageLabel->setAlignment( Qt::AlignCenter );
-    layout4->addWidget( scalingPercentageLabel );
-    scalingPercentageEdit = new QLineEdit( "", this );
-	 scalingPercentageEdit->setValidator( new QDoubleValidator(-1000, 1000, 2, scalingPercentageEdit) );
-    layout4->addWidget( scalingPercentageEdit );
+    layout4 = new QHBoxLayout;
+    recordIdxLabel = new QLabel( "Recording Idx", this );
+    recordIdxLabel->setAlignment( Qt::AlignCenter );
+    layout4->addWidget( recordIdxLabel );
+    recordIdxEdit = new QLineEdit( "", this );
+	recordIdxEdit->setValidator( new QIntValidator(0, 10000, recordIdxEdit) );
+    layout4->addWidget( recordIdxEdit );
     AddStepDialogLayout->addLayout( layout4 );
 
     layout5 = new QHBoxLayout;  
@@ -74,26 +75,18 @@ std::cout<<"AddStepDialog constructor called"<<std::endl;
     AddStepDialogLayout->addLayout( layout5 );
 
     buttonGroup = new QButtonGroup( this );
-//    buttonGroupLayout = new QHBoxLayout( buttonGroup );
-//    buttonGroupLayout->setAlignment( Qt::AlignTop );
 	 buttonGroupBox = new QGroupBox( this );
     buttonGroupBoxLayout = new QHBoxLayout( buttonGroupBox );
     buttonGroupBoxLayout->setAlignment( Qt::AlignTop );
 
     addStepButton = new QPushButton( "Add Step", buttonGroupBox );
-//    addStepButton = new QPushButton( "addStepButton", buttonGroup );
     buttonGroupBoxLayout->addWidget( addStepButton );
 	 buttonGroup->addButton(addStepButton);
-//    buttonGroupLayout->addWidget( addStepButton );
 
     exitButton = new QPushButton( "Exit", buttonGroupBox );
     buttonGroupBoxLayout->addWidget( exitButton );
 	 buttonGroup->addButton(exitButton);
     AddStepDialogLayout->addWidget( buttonGroupBox );
-//    exitButton = new QPushButton( "exitButton", buttonGroup );
-//    buttonGroupLayout->addWidget( exitButton );
-//    AddStepDialogLayout->addWidget( buttonGroup );
-std::cout<<"AddStepDialog constructor returned"<<std::endl;
 }
 
 /*

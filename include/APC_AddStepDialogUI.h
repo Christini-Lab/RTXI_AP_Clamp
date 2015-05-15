@@ -15,10 +15,10 @@ class AddStepDialog : public QDialog {
 		QLineEdit* BCLEdit;
 		QLabel* numBeatsLabel;
 		QLineEdit* numBeatsEdit;
-		QLabel* currentToScaleLabel;
-		QLineEdit* currentToScaleEdit;
-		QLabel* scalingPercentageLabel;
-		QLineEdit* scalingPercentageEdit;
+        QLabel* numIterationsLabel;
+		QLineEdit* numIterationsEdit;
+        QLabel* recordIdxLabel;
+		QLineEdit* recordIdxEdit;
 		QLabel* waitTimeLabel;
 		QLineEdit* waitTimeEdit;
 		QButtonGroup* buttonGroup;

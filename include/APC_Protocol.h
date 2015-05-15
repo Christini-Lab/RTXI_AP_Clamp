@@ -44,8 +44,8 @@ class AddStepInputDialog: public AddStepDialog {
     QString stepType;
     QString BCL;
     QString numBeats;
-    QString currentToScale;
-    QString scalingPercentage;
+    QString numIterations;
+    QString recordIdx;
     QString waitTime;
     
     signals:
@@ -63,14 +63,14 @@ class AddStepInputDialog: public AddStepDialog {
 
 class ProtocolStep {
 public:
-    enum stepType_t { PACE, SCALE, WAIT } stepType;    
+    enum stepType_t { PACE, STARTVM, STOPVM, AVERAGE, APCLAMP, STARTRECORD, STOPRECORD, WAIT } stepType;    
     int BCL; // ms
     int numBeats;
-    std::string currentToScale; // String name of current
-    int scalingPercentage; // Whole number %
+    int numIterations;
+    int recordIdx;
     int waitTime; // ms
     
-    ProtocolStep( stepType_t, int, int, std::string, int, int );
+    ProtocolStep( stepType_t, int, int, int, int, int );
     ~ProtocolStep( void );
     int stepLength ( double );
 };
