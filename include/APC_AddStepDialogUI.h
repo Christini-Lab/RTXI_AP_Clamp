@@ -21,8 +21,6 @@ class AddStepDialog : public QDialog {
 		QLineEdit* scalingPercentageEdit;
 		QLabel* waitTimeLabel;
 		QLineEdit* waitTimeEdit;
-		QLabel* modelLabel;
-		QComboBox* modelComboBox;
 		QButtonGroup* buttonGroup;
 		QGroupBox* buttonGroupBox;
 		QPushButton* addStepButton;
@@ -35,7 +33,6 @@ class AddStepDialog : public QDialog {
 		QHBoxLayout* layout3;
 		QHBoxLayout* layout4;
 		QHBoxLayout* layout5;
-		QHBoxLayout* layout6;
 		QHBoxLayout* buttonGroupLayout;
 		QHBoxLayout* buttonGroupBoxLayout;
 };

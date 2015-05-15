@@ -47,7 +47,6 @@ class AddStepInputDialog: public AddStepDialog {
     QString currentToScale;
     QString scalingPercentage;
     QString waitTime;
-    QString model;
     
     signals:
     void checked( void );
@@ -64,15 +63,14 @@ class AddStepInputDialog: public AddStepDialog {
 
 class ProtocolStep {
 public:
-    enum stepType_t { PACE, SCALE, WAIT, STARTMODEL, STOPMODEL, RESETMODEL, CHANGEMODEL } stepType;    
+    enum stepType_t { PACE, SCALE, WAIT } stepType;    
     int BCL; // ms
     int numBeats;
     std::string currentToScale; // String name of current
     int scalingPercentage; // Whole number %
     int waitTime; // ms
-    enum modelType_t { LIVRUDY2009, FABERRUDY2000 } modelType;
     
-    ProtocolStep( stepType_t, int, int, std::string, int, int, modelType_t );
+    ProtocolStep( stepType_t, int, int, std::string, int, int );
     ~ProtocolStep( void );
     int stepLength ( double );
 };

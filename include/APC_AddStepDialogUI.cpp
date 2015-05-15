@@ -23,10 +23,6 @@ std::cout<<"AddStepDialog constructor called"<<std::endl;
     stepComboBox->insertItem( 0, tr( "Static Pacing" ) );
     stepComboBox->insertItem( 1, tr( "Current Scaling" ) );
     stepComboBox->insertItem( 2, tr( "Wait" ) );
-    stepComboBox->insertItem( 3, tr( "Model: Start" ) );
-    stepComboBox->insertItem( 4, tr( "Model: Stop" ) );
-    stepComboBox->insertItem( 5, tr( "Model: Reset" ) );
-    stepComboBox->insertItem( 6, tr( "Model: Change" ) );
 
     AddStepDialogLayout->addWidget( stepComboBox );
 
@@ -76,17 +72,6 @@ std::cout<<"AddStepDialog constructor called"<<std::endl;
 	 waitTimeEdit->setValidator( new QDoubleValidator(0, 10000, 2, waitTimeEdit) );
     layout5->addWidget( waitTimeEdit );
     AddStepDialogLayout->addLayout( layout5 );
-
-    layout6 = new QHBoxLayout; 
-    modelLabel = new QLabel( "Model", this );
-    modelLabel->setAlignment( Qt::AlignCenter );
-    layout6->addWidget( modelLabel );
-    modelComboBox = new QComboBox( this );
-    modelComboBox->clear();
-    modelComboBox->insertItem( 0, tr( "Livzhitz Rudy 2009" ) );
-    modelComboBox->insertItem( 1, tr( "Faber Rudy 2000" ) );
-    layout6->addWidget( modelComboBox );
-    AddStepDialogLayout->addLayout( layout6 );
 
     buttonGroup = new QButtonGroup( this );
 //    buttonGroupLayout = new QHBoxLayout( buttonGroup );

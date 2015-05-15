@@ -464,10 +464,6 @@ void AP_Clamp::Module::createGUI( void ) {
 	 setLayout(layout);
 	 layout->addWidget(mainWindow);
 
-    // Model Combo Box
-    mainWindow->modelComboBox->addItem("LivRudy 2009");
-    mainWindow->modelComboBox->addItem("FaberRudy 2000");
-
     // Set GUI refresh rate
     QTimer *timer = new QTimer(this);
     timer->start(500);
