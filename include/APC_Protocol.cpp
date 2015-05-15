@@ -17,11 +17,11 @@
  */
 
 /*** INTRO
- * Current Scaling Dynamic Clamp
+ * Action Potental Clamp
  * 
- * IS_DC_Protocol.cpp, v1.0
+ * APC_Protocol.cpp, v1.0
  *
- * Author: Francis A. Ortega (2011)
+ * Author: Francis A. Ortega (2015)
  *
  * Notes in header
  *
@@ -35,12 +35,7 @@
 using namespace std;
 
 /* AddStepInputDialog Class */
-AddStepInputDialog::AddStepInputDialog(QWidget* parent ) : AddStepDialog( parent ) /*, 0, TRUE )*/ {
-//    QValidator* validator = new QIntValidator(this);
-//    BCLEdit->setValidator(validator);
-//    numBeatsEdit->setValidator(validator);
-//    scalingPercentageEdit->setValidator(validator);
-    
+AddStepInputDialog::AddStepInputDialog(QWidget* parent ) : AddStepDialog( parent ) {
     QObject::connect( addStepButton,SIGNAL(clicked(void)),this,SLOT(addStepClicked(void)) );
     QObject::connect( exitButton, SIGNAL(clicked(void)), this, SLOT( reject() ) );
     QObject::connect( this, SIGNAL(checked(void)), this, SLOT(accept()) ); // Dialog returns Accept after inputs have been checked
@@ -80,7 +75,6 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
 }
 
 void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and checks if they are valid entries
-//std::cout<<"AddStepInputDialog::addStepClicked called"<<std::endl;
     bool check = true;
     BCL = BCLEdit->text();
     stepType = QString::number( stepComboBox->currentIndex() );
@@ -88,13 +82,6 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
     currentToScale = currentToScaleEdit->text();
     scalingPercentage = scalingPercentageEdit->text();
     waitTime = waitTimeEdit->text();
-
-//std::cout<<"BCL: "<<BCL.toStdString()<<std::endl;
-//std::cout<<"stepType: "<<stepType.toStdString()<<std::endl;
-//std::cout<<"numBeats: "<<numBeats.toStdString()<<std::endl;
-//std::cout<<"currentToScale: "<<currentToScale.toStdString()<<std::endl;
-//std::cout<<"scalingPercentage: "<<scalingPercentage.toStdString()<<std::endl;
-//std::cout<<"waitTime: "<<waitTime.toStdString()<<std::endl;
  
     switch( stepComboBox->currentIndex() ) {
     case 0: // Pace
@@ -112,32 +99,21 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
 
     if (check) emit checked();
     else QMessageBox::warning( this, "Error", "Invalid Input, please correct." );
-//std::cout<<"AddStepInputDialog::addStepClicked returned"<<std::endl;
 }
 
 vector<QString> AddStepInputDialog::gatherInput( void ) {
-//std::cout<<"gatherInput called"<<std::endl;
     std::vector<QString> inputAnswers;
     
     if( exec() == QDialog::Rejected ) {
-//std::cout<<"gatherInput returned rejected"<<std::endl;
         return inputAnswers; // Return an empty vector if step window is closed
 	 }
     else { // QDialog is accepted when addStep button is pressed and inputs are considered valid
-//        inputAnswers.push_back( QString::number( stepComboBox->currentIndex() ) );
         inputAnswers.push_back( stepType );
         inputAnswers.push_back( BCL );
         inputAnswers.push_back( numBeats );
         inputAnswers.push_back( currentToScale );
         inputAnswers.push_back( scalingPercentage );
         inputAnswers.push_back( waitTime );
-
-/*std::cout<<"Printing inputAnswers"<<std::endl;
-for (std::vector<QString>::iterator it = inputAnswers.begin(); it != inputAnswers.end(); it++) {
-	std::cout<<it->toStdString()<<std::endl;
-}
-std::cout<<"gatherInput returned accepted"<<std::endl;
-*/
         return inputAnswers;
     }
 }
@@ -187,7 +163,6 @@ bool Protocol::addStep( QWidget *parent ) {
 bool Protocol::addStep( QWidget *parent, int idx ) {
     AddStepInputDialog *dlg = new AddStepInputDialog(parent); // Special dialog box for step parameter input
     vector<QString> inputAnswers = dlg->gatherInput(); // Opens dialog box for input
-    delete dlg;
 
     vector<ProtocolStepPtr>::iterator it = protocolContainer.begin();
     
@@ -204,8 +179,8 @@ bool Protocol::addStep( QWidget *parent, int idx ) {
             ) ) );
         return true;
     }
-    else return false; // No step added
-std::cout<<"addStep returned with parent and index as args"<<std::endl;
+    else
+        return false;// No step added
 }
 
     // Deletes a step
@@ -279,7 +254,7 @@ QString Protocol::loadProtocol( QWidget *parent ) {
 
     // Save dialog to retrieve desired filename and location
     QString fileName = QFileDialog::getOpenFileName(parent,"Open a protocol","~/","XML Files (*.xml)");
-    QDomDocument doc( "IS_DC_Protocol" );
+    QDomDocument doc( "APC_Protocol" );
     QFile file( fileName );
 
     if( !file.open( QIODevice::ReadOnly ) ) { // Make sure file can be opened, if not, warn user
@@ -296,7 +271,7 @@ QString Protocol::loadProtocol( QWidget *parent ) {
 	 file.close();
 
     QDomElement root = doc.documentElement(); // Get root element from document
-    if( root.tagName() != "IS_DC_protocol-v1.0" ) { // Check if tagname is correct for this module version
+    if( root.tagName() != "APC_protocol-v1.0" ) { // Check if tagname is correct for this module version
         QMessageBox::warning(parent, "Error", "Incompatible XML file" );
         return "";
     }
@@ -341,7 +316,7 @@ void Protocol::loadProtocol( QWidget *parent, QString fileName ) {
                              | QMessageBox::Escape) != QMessageBox::Yes )
         return ; // Return if answer is no
 
-    QDomDocument doc( "IS_DC_Protocol" );
+    QDomDocument doc( "APC_Protocol" );
     QFile file( fileName );
 
     if( !file.open( QIODevice::ReadOnly ) ) { // Make sure file can be opened, if not, warn user
@@ -358,7 +333,7 @@ void Protocol::loadProtocol( QWidget *parent, QString fileName ) {
     QDomElement root = doc.documentElement(); // Get root element from documen
 	 
 	 // Check if tagname is correct for this module versiont
-    if( root.tagName() != "IS_DC_protocol-v1.0" ) { 
+    if( root.tagName() != "APC_protocol-v1.0" ) { 
         QMessageBox::warning(parent, "Error", "Incompatible XML file" );
         return;
     }
