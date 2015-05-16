@@ -43,8 +43,6 @@ class AP_ClampUI : public QWidget {
 		QLabel* intervalTimeLabel;
 		QLineEdit* intervalTimeEdit;
 		QCheckBox* recordDataCheckBox;
-		QGroupBox* modelGroup;
-		QComboBox* modelComboBox;
 		QWidget* TabPage_3;
 		QPushButton* deleteStepButton;
 		QPushButton* loadProtocolButton;

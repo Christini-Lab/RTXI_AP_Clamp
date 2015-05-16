@@ -14,21 +14,9 @@ std::cout<<"AP_ClampUI constructor called"<<std::endl;
     setWindowTitle( tr( "Current Scaling Dynamic Clamp" ) );
 	 
     AP_ClampUILayout = new QVBoxLayout( this );
-//    AP_ClampUILayout = new QVBoxLayout( parent );
 	 setLayout(AP_ClampUILayout);
 
-//    protocolButtonGroup = new QButtonGroup( parent );
     protocolButtonGroup = new QButtonGroup( this );
-//    protocolButtonGroup->setAlignment( Qt::AlignCenter );
-//    protocolButtonGroup->setColumnLayout(0, Qt::Vertical );
-//    protocolButtonGroup->layout()->setSpacing( 6 );
-//    protocolButtonGroup->layout()->setMargin( 11 );
-//    protocolButtonGroupLayout = new QGridLayout( protocolButtonGroup->layout() );
-//    protocolButtonGroupLayout->setAlignment( Qt::AlignTop );
-//    spacer1b = new QSpacerItem( 0, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-//    protocolButtonGroupLayout->addItem( spacer1b, 0, 4 );
-//    spacer2b = new QSpacerItem( 0, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-//    protocolButtonGroupLayout->addItem( spacer2b, 1, 4 );
 
     protocolGroup = new QGroupBox;
     protocolGroup->setAlignment( Qt::AlignCenter );
@@ -41,12 +29,10 @@ std::cout<<"AP_ClampUI constructor called"<<std::endl;
     protocolGroupLayout->addItem( spacer2b, 1, 4 );
 
     staticPacingButton = new QPushButton( "Pace", protocolGroup );
-//	 protocolButtonGroup->addButton(staticPacingButton);
     staticPacingButton->setCheckable( true );
     protocolGroupLayout->addWidget( staticPacingButton, 0, 3 );
 
     resetButton = new QPushButton( "Reset", protocolGroup );
-//	 protocolButtonGroup->addButton(resetButton);
     resetButton->setCheckable( false );
     protocolGroupLayout->addWidget( resetButton, 1, 3 );
 
@@ -56,12 +42,10 @@ std::cout<<"AP_ClampUI constructor called"<<std::endl;
     protocolGroupLayout->addItem( spacer4b, 1, 2 );
 
     startProtocolButton = new QPushButton( "Protocol", protocolGroup );
-//	 protocolButtonGroup->addButton(startProtocolButton);
     startProtocolButton->setCheckable( true );
     protocolGroupLayout->addWidget( startProtocolButton, 1, 1 );
 
     thresholdButton = new QPushButton( "Threshold", protocolGroup );
-//	 protocolButtonGroup->addButton(thresholdButton);
     thresholdButton->setCheckable( true );
     protocolGroupLayout->addWidget( thresholdButton, 0, 1 );
 
@@ -71,9 +55,7 @@ std::cout<<"AP_ClampUI constructor called"<<std::endl;
     protocolGroupLayout->addItem( spacer6b, 0, 0 );
     AP_ClampUILayout->addWidget( protocolGroup );
 
-//    tabBox = new QTabWidget( parent );
     tabBox = new QTabWidget( this );
-//    tabBox->setFocusPolicy( QTabWidget::NoFocus );
     tabBox->setTabPosition( QTabWidget::North );
     tabBox->setTabShape( QTabWidget::Rounded );
 
@@ -180,19 +162,7 @@ std::cout<<"AP_ClampUI constructor called"<<std::endl;
     spacer2a = new QSpacerItem( 0, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
     recordDataLayout->addItem( spacer2a );
     tabLayout->addLayout( recordDataLayout, 2, 0, 1, 2 );
-
-    modelGroup = new QGroupBox( "Dynamic Clamp Model", tab );
-    modelGroup->setAlignment( Qt::AlignCenter );
-//    modelGroup->setColumnLayout( 0, Qt::Vertical );
-//    modelGroup->layout()->setSpacing( 6 );
-//    modelGroup->layout()->setMargin( 11 );
-    modelGroupLayout = new QVBoxLayout( modelGroup );
-	 modelGroup->setLayout(modelGroupLayout);
-    modelGroupLayout->setAlignment( Qt::AlignTop );
-
-    modelComboBox = new QComboBox( modelGroup );
-    modelGroupLayout->addWidget( modelComboBox );
-    tabLayout->addWidget( modelGroup, 3, 0, 1, 2 );
+    
     tabBox->addTab( tab, QString::fromLatin1("") );
 	 tabBox->setTabText( tabBox->indexOf(tab), "Protocol" );
 
@@ -252,7 +222,6 @@ std::cout<<"AP_ClampUI constructor called"<<std::endl;
 	 tabBox->setTabText( tabBox->indexOf(tab_2), "APD" );
     AP_ClampUILayout->addWidget( tabBox );
 
-//    protocolEditorListBox = new QListWidget( parent );
     protocolEditorListBox = new QListWidget( this );
     protocolEditorListBox->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
     protocolEditorListBox->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
