@@ -9,9 +9,8 @@
  */
 AP_ClampUI::AP_ClampUI( QWidget* parent ) : QWidget( parent ) {
 
-std::cout<<"AP_ClampUI constructor called"<<std::endl;
 	 QWidget::setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle( tr( "Current Scaling Dynamic Clamp" ) );
+    setWindowTitle( tr( "Action Potential Clamp" ) );
 	 
     AP_ClampUILayout = new QVBoxLayout( this );
 	 setLayout(AP_ClampUILayout);
@@ -226,7 +225,6 @@ std::cout<<"AP_ClampUI constructor called"<<std::endl;
     protocolEditorListBox->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
     protocolEditorListBox->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
     AP_ClampUILayout->addWidget( protocolEditorListBox );
-std::cout<<"AP_ClampUI constructor returned"<<std::endl;
 }
 
 /*
