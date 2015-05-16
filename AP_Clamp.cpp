@@ -191,6 +191,76 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
         break;
 
     case PROTOCOL:
+
+        time += period;
+        stepTime += 1;
+
+        if (protocolMode == STEPINIT) {
+            stepInitDone = false;
+
+            // These steps do not consume a thread loop by themselves
+            while (!stepInitDone) {
+                // End of protocol
+                if (currentStep >= protocolContainer->size()) {// If end of protocol has been reached
+                    protocolMode = END;
+                    stepInitDone = true;
+                }
+                else {
+                    stepPtr = protocolContainer->at(currentStep);
+                    stepType = stepPtr->stepType;
+
+                    // Start data recording
+                    if (stepType == ProtocolStep::STARTRECORD) {
+                        if( !recording ) { // Record data if dataRecord is toggled
+                            Event::Object event(Event::START_RECORDING_EVENT);
+                            Event::Manager::getInstance()->postEventRT(&event);
+                            recording = true;
+                        }
+                        currentStep++;
+                    }
+                    // Stop data recording
+                    else if (stepType == ProtocolStep::STOPRECORD) {
+                        if(recording == true) {
+                            Event::Object event(Event::STOP_RECORDING_EVENT);
+                            Event::Manager::getInstance()->postEventRT(&event);
+                            recording = false;
+                        }
+                        currentStep++;
+                    }
+                    // Start Vm recording
+                    else if (stepType == ProtocolStep::STARTVM) {
+                        vmRecording = true;
+                        currentStep++;
+                    }
+                    // Stop Vm recording
+                    else if (stepType == ProtocolStep::STOPVM) {
+                        vmRecording = false;
+                        currentStep++;
+                    }
+                    // Finished all initial steps
+                    else {
+                        stepTime = 0;
+                        cycleStartTime = 0;
+
+                        if( stepType == ProtocolStep::PACE || stepType == ProtocolStep::AVERAGE)
+                            stepEndTime = (( stepPtr->BCL * stepPtr->numBeats ) / period ) - 1; // -1 since time starts at 0, not 1
+                        else
+                            stepEndTime = ( stepPtr->waitTime / period ) - 1; // -1 since time starts at 0, not 1
+                        
+                        pBCLInt = stepPtr->BCL / period; // BCL for protocol
+                        protocolMode = EXEC;
+                        beatNum++;
+                        Vrest = voltage;
+                        calculateAPD( 1 );
+                        stepInitDone = true;
+                    }                   
+                }
+                
+            } // end while (!stepInitiDone)            
+        } // end if (protocolMode == STEPINIT)
+   
+            
+            
         break;
         
     } // end switch( executeMode )     

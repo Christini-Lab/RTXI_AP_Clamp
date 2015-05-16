@@ -76,7 +76,8 @@ namespace AP_Clamp {
         bool recordData; // True if data will be recorded
         bool recording; // True if data recording is recording
         bool voltageClamp;
-        bool modelInit;
+        bool vmRecording;
+        bool stepInitDone;
         QString loadedFile;
         bool protocolOn;
         bool thresholdOn;
