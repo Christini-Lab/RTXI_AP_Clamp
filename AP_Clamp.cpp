@@ -242,11 +242,11 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                         stepTime = 0;
                         cycleStartTime = 0;
 
-                        if( stepType == ProtocolStep::PACE || stepType == ProtocolStep::AVERAGE)
+                        if ( stepType == ProtocolStep::PACE || stepType == ProtocolStep::AVERAGE)
                             stepEndTime = (( stepPtr->BCL * stepPtr->numBeats ) / period ) - 1; // -1 since time starts at 0, not 1
-                        else
+                        else if ( stepType == ProtocolStep::WAIT ) { std::cout << stepPtr->waitTime / period << std::endl;
                             stepEndTime = ( stepPtr->waitTime / period ) - 1; // -1 since time starts at 0, not 1
-                        
+                        }
                         pBCLInt = stepPtr->BCL / period; // BCL for protocol
                         protocolMode = EXEC;
                         beatNum++;
@@ -259,7 +259,45 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
             } // end while (!stepInitiDone)            
         } // end if (protocolMode == STEPINIT)
    
+        if( protocolMode == EXEC ) { // Execute protocol
+            if( stepType == ProtocolStep::PACE || stepType == ProtocolStep::AVERAGE) { // Pace cell at BCL
+                if (stepTime - cycleStartTime >= pBCLInt) {
+                    beatNum++;
+                    cycleStartTime = stepTime;
+                    Vrest = voltage;
+                    calculateAPD( 1 );
+                }
+                // Stimulate cell for stimLength(ms)
+                if ( (stepTime - cycleStartTime) < stimLengthInt )
+                    outputCurrent = stimMag * 1e-9;
+                else
+                    outputCurrent = 0;
+                
+                output(0) = outputCurrent;
+                calculateAPD(2);
+
+                
+            } // end if(PACE || SCALE)
+        
+            else { // If stepType = WAIT
+                output(0) = 0;
+            }
             
+            if( stepTime >= stepEndTime ) {
+                currentStep++;
+                protocolMode = STEPINIT;
+            }            
+        } // end EXEC
+
+        if( protocolMode == END ) { // End of Protocol: Stop Data recorder and untoggle button
+            if(recording == true) {
+                Event::Object event(Event::STOP_RECORDING_EVENT);
+                Event::Manager::getInstance()->postEventRT(&event);
+                recording = false;
+            }
+            protocolOn = false;
+            executeMode = IDLE;
+        } // end END
             
         break;
         

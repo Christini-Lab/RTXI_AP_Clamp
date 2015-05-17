@@ -51,12 +51,64 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
     case ProtocolStep::PACE:
         BCLEdit->setEnabled(true);
         numBeatsEdit->setEnabled(true);
+        numIterationsEdit->setEnabled(false);
+        recordIdxEdit->setEnabled(false);
+        waitTimeEdit->setEnabled(false);
+        break;
+
+    case ProtocolStep::STARTVM:
+        BCLEdit->setEnabled(false);
+        numBeatsEdit->setEnabled(false);
+        numIterationsEdit->setEnabled(false);
+        recordIdxEdit->setEnabled(true);
+        waitTimeEdit->setEnabled(false);
+        break;
+
+    case ProtocolStep::STOPVM:
+        BCLEdit->setEnabled(false);
+        numBeatsEdit->setEnabled(false);
+        numIterationsEdit->setEnabled(false);
+        recordIdxEdit->setEnabled(false);
+        waitTimeEdit->setEnabled(false);
+        break;
+
+    case ProtocolStep::AVERAGE:
+        BCLEdit->setEnabled(true);
+        numBeatsEdit->setEnabled(true);
+        numIterationsEdit->setEnabled(false);
+        recordIdxEdit->setEnabled(true);
+        waitTimeEdit->setEnabled(false);
+        break;
+
+    case ProtocolStep::APCLAMP:
+        BCLEdit->setEnabled(false);
+        numBeatsEdit->setEnabled(false);
+        numIterationsEdit->setEnabled(true);
+        recordIdxEdit->setEnabled(true);
+        waitTimeEdit->setEnabled(false);
+        break;
+
+    case ProtocolStep::STARTRECORD:
+        BCLEdit->setEnabled(false);
+        numBeatsEdit->setEnabled(false);
+        numIterationsEdit->setEnabled(false);
+        recordIdxEdit->setEnabled(false);
+        waitTimeEdit->setEnabled(false);
+        break;
+
+    case ProtocolStep::STOPRECORD:
+        BCLEdit->setEnabled(false);
+        numBeatsEdit->setEnabled(false);
+        numIterationsEdit->setEnabled(false);
+        recordIdxEdit->setEnabled(false);
         waitTimeEdit->setEnabled(false);
         break;
 
     case ProtocolStep::WAIT:
         BCLEdit->setEnabled(false);
         numBeatsEdit->setEnabled(false);
+        numIterationsEdit->setEnabled(false);
+        recordIdxEdit->setEnabled(false);
         waitTimeEdit->setEnabled(true);
         break;
     }
@@ -67,6 +119,8 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
     BCL = BCLEdit->text();
     stepType = QString::number( stepComboBox->currentIndex() );
     numBeats = numBeatsEdit->text();
+    numIterations = numIterationsEdit->text();
+    recordIdx = recordIdxEdit->text();
     waitTime = waitTimeEdit->text();
  
     switch( stepComboBox->currentIndex() ) {
@@ -74,28 +128,28 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
         if (BCL == "" || numBeats == "") check = false;
         break;
         
-    case 2: // Start Vm Recording
+    case 1: // Start Vm Recording
         if (recordIdx == "") check = false;
         break;
 
-    case 3: // Stop Vm Recording
+    case 2: // Stop Vm Recording
         break;
         
-    case 4: // Average Vm
+    case 3: // Average Vm
         if (BCL == "" || numBeats == "" ) check = false;
         break;
         
-    case 5: // AP Clamp
-        if (recordIdx == "" ) check = false;
+    case 4: // AP Clamp
+        if (recordIdx == "" || numIterations == "") check = false;
         break;
         
-    case 6: // Start Data Recording
+    case 5: // Start Data Recording
         break;
         
-    case 7: // Stop Data Recording
+    case 6: // Stop Data Recording
         break;
         
-    case 8: // Wait
+    case 7: // Wait
         if (waitTime == "") check = false;
         break;
     }
@@ -397,6 +451,37 @@ QString Protocol::getStepDescription( int stepNumber ) {
     case ProtocolStep::PACE:
         type = "Pace ";
         description = type + ": " + QString::number( step->numBeats ) + " beats - " + QString::number( step->BCL ) + "ms BCL";
+        break;
+
+    case ProtocolStep::STARTVM:
+        type = "Start - Vm Record ";
+        description = type + ": Index(" + QString::number( step->recordIdx ) + ")";
+        break;
+
+    case ProtocolStep::STOPVM:
+        type = "Stop - Vm Record ";
+        description = type + ": All Indexes";
+        break;
+
+    case ProtocolStep::AVERAGE:
+        type = "Average Vm ";
+        description = type + ": Index(" + QString::number( step->recordIdx ) + ") | " + QString::number( step->numBeats ) +
+            " beats - " + QString::number( step->BCL ) + "ms BCL";
+        break;
+
+    case ProtocolStep::APCLAMP:
+        type = "AP Clamp ";
+        description = type + ": Index(" + QString::number( step->recordIdx ) + ")";
+        break;
+
+    case ProtocolStep::STARTRECORD:
+        type = "Start - Data Recorder";
+        description = type;
+        break;
+
+    case ProtocolStep::STOPRECORD:
+        type = "Stop - Data Recorder";
+        description = type;
         break;
                 
     case ProtocolStep::WAIT:
