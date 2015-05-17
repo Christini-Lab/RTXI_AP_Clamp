@@ -638,7 +638,7 @@ void AP_Clamp::Module::doLoad(const Settings::Object::State &s) {
         showMinimized();
     
     if (s.loadInteger("W") != NULL) {
-        resize(s.loadInteger("W"), s.loadInteger("H"));
+        parentWidget()->resize(s.loadInteger("W"), s.loadInteger("H"));
         parentWidget()->move(s.loadInteger("X"), s.loadInteger("Y"));
     }
 
@@ -672,8 +672,8 @@ void AP_Clamp::Module::doSave(Settings::Object::State &s) const {
     QPoint pos = parentWidget()->pos();
     s.saveInteger( "X", pos.x() );
     s.saveInteger( "Y", pos.y() );
-    s.saveInteger( "W", width() );
-    s.saveInteger( "H", height() );
+    s.saveInteger( "W", parentWidget()->width() );
+    s.saveInteger( "H", parentWidget()->height() );
     s.saveString( "Protocol", loadedFile.toStdString() );
     s.saveInteger( "APD Repol", APDRepol );
     s.saveInteger( "Min APD", minAPD );
