@@ -31,6 +31,8 @@
 #include "include/APC_Protocol.h" // Protocol Library
 #include "include/APC_MainWindowUI.h" // Main Window GUI
 
+#include <vector>
+
 #include <rt.h>
 #include <settings.h>
 #include <workspace.h>
@@ -138,7 +140,15 @@ namespace AP_Clamp {
         double responseTime, initialStimulusTime;
         double diastolicThreshold;
         double responseDuration;
-        double peakVoltageT;        
+        double peakVoltageT;
+
+        // AP Clamp Variables
+        std::vector< std::vector<double> > voltageData;
+        std::vector<double> *vmRecordData;
+        std::vector<double> *avgRecordData;
+        std::vector<double> *apClampData;
+        int recordingIndex;
+        int vmRecordCnt, avgCnt, apClampCnt;
    
         // Module functions
         void createGUI(); // Construct GUI

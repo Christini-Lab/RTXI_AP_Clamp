@@ -119,7 +119,7 @@ AP_Clamp::Module::~Module(void) {
 
 void AP_Clamp::Module::execute(void) { // Real-Time Execution
     voltage = input(0) * 1e3 - LJP;
-
+    voltage = 10;
     switch( executeMode ) {
     case IDLE:
         break;
@@ -227,60 +227,115 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                         }
                         currentStep++;
                     }
-                    // Start Vm recording
+                    // Start Vm recording init
                     else if (stepType == ProtocolStep::STARTVM) {
                         vmRecording = true;
+                        recordingIndex = stepPtr->recordIdx;
+                        vmRecordData = &voltageData[recordingIndex];
+                        vmRecordData->clear();
+                        vmRecordCnt = 0;
                         currentStep++;
                     }
-                    // Stop Vm recording
+                    // Stop Vm recording init
                     else if (stepType == ProtocolStep::STOPVM) {
                         vmRecording = false;
                         currentStep++;
                     }
-                    // Finished all initial steps
                     else {
                         stepTime = 0;
                         cycleStartTime = 0;
+                        pBCLInt = stepPtr->BCL / period; // BCL for protocol
 
-                        if ( stepType == ProtocolStep::PACE || stepType == ProtocolStep::AVERAGE)
+                        // Pace, Average, and AP Clamp Init
+                        if (stepType == ProtocolStep::PACE ||
+                            stepType == ProtocolStep::AVERAGE ||
+                            stepType == ProtocolStep::APCLAMP ) {
+                            
                             stepEndTime = (( stepPtr->BCL * stepPtr->numBeats ) / period ) - 1; // -1 since time starts at 0, not 1
-                        else if ( stepType == ProtocolStep::WAIT ) { std::cout << stepPtr->waitTime / period << std::endl;
+                            beatNum++;
+
+                            if ( stepType == ProtocolStep::AVERAGE ) {
+                                recordingIndex = stepPtr->recordIdx;
+                                avgRecordData = &voltageData[recordingIndex];
+                                avgRecordData->clear();
+                                avgRecordData->resize( stepPtr->BCL / period ); // All elements are set to 0
+                                avgCnt = 1; // Keeps track of how many beats have been added
+                            }
+                            else if ( stepType == ProtocolStep::APCLAMP ) {
+                                recordingIndex = stepPtr->recordIdx;
+                                apClampData = &voltageData[recordingIndex];
+                                apClampCnt = 1;
+                                std::cout << "APCLAMP Data size: " << apClampData->size() << std::endl;
+                            }
+                        }
+                        // Wait Init
+                        else {
                             stepEndTime = ( stepPtr->waitTime / period ) - 1; // -1 since time starts at 0, not 1
                         }
-                        pBCLInt = stepPtr->BCL / period; // BCL for protocol
+                        
                         protocolMode = EXEC;
-                        beatNum++;
                         Vrest = voltage;
                         calculateAPD( 1 );
                         stepInitDone = true;
+
+                        if ( stepType == ProtocolStep::APCLAMP && pBCLInt > apClampData->size() ) {
+                            ERROR_MSG("AP_Clamp Error: Not enough data for entire step\n");
+                            protocolMode = END;
+                        }
                     }                   
                 }
                 
             } // end while (!stepInitiDone)            
         } // end if (protocolMode == STEPINIT)
    
-        if( protocolMode == EXEC ) { // Execute protocol
-            if( stepType == ProtocolStep::PACE || stepType == ProtocolStep::AVERAGE) { // Pace cell at BCL
+        if ( protocolMode == EXEC ) { // Execute protocol
+
+            // Static Pacing or Averaging
+            if ( stepType == ProtocolStep::PACE || stepType == ProtocolStep::AVERAGE) { // Pace cell at BCL
                 if (stepTime - cycleStartTime >= pBCLInt) {
                     beatNum++;
                     cycleStartTime = stepTime;
                     Vrest = voltage;
                     calculateAPD( 1 );
+                    if ( stepType == ProtocolStep::AVERAGE )
+                        avgCnt++;
                 }
+                
                 // Stimulate cell for stimLength(ms)
                 if ( (stepTime - cycleStartTime) < stimLengthInt )
                     outputCurrent = stimMag * 1e-9;
                 else
                     outputCurrent = 0;
-                
+
+                if ( stepType == ProtocolStep::AVERAGE ) {
+                    if ( avgCnt == stepPtr->numBeats )
+                        avgRecordData->at(stepTime - cycleStartTime) =
+                            (voltage + avgRecordData->at(stepTime - cycleStartTime)) / beatNum;
+                    else
+                        avgRecordData->at(stepTime - cycleStartTime) = voltage + avgRecordData->at(stepTime - cycleStartTime);
+                }
                 output(0) = outputCurrent;
                 calculateAPD(2);
-
                 
-            } // end if(PACE || SCALE)
-        
-            else { // If stepType = WAIT
+            } // end if(PACE || AVERAGE)
+
+            // Wait
+            else if ( stepType == ProtocolStep::WAIT ) { 
                 output(0) = 0;
+            }
+            
+            // AP Clamp
+            else {
+                if (stepTime - cycleStartTime >= pBCLInt) {
+                    beatNum++;
+                    cycleStartTime = stepTime;
+                }
+                voltage = avgRecordData->at(stepTime - cycleStartTime);
+                output(0) = voltage;
+            }
+            
+            if ( vmRecording ) {
+                vmRecordData->push_back(voltage);
             }
             
             if( stepTime >= stepEndTime ) {
@@ -350,6 +405,9 @@ void AP_Clamp::Module::initialize(void){ // Initialize all variables, protocol, 
 
     // APD parameters
    upstrokeThreshold = -40;
+
+   // AP Clamp Variables
+    voltageData.resize(100);
 }
 
 void AP_Clamp::Module::reset( void ) {
@@ -425,9 +483,6 @@ void AP_Clamp::Module::toggleThreshold( void ) {
         executeMode = IDLE;
         setActive( false );
     }
-  
-//    ToggleThresholdEvent event( this, thresholdOn );
-//    RT::System::getInstance()->postEvent( &event );
 }
 
 void AP_Clamp::Module::toggleProtocol( void ) {
@@ -441,7 +496,7 @@ void AP_Clamp::Module::toggleProtocol( void ) {
         if( protocolContainer->size() <= 0 ) {
 				QMessageBox * msgBox = new QMessageBox;
 				msgBox->setWindowTitle("Error");
-				msgBox->setText("I need a protocol first, buddy");
+				msgBox->setText("No protocol entered");
 				msgBox->setStandardButtons(QMessageBox::Ok);
 				msgBox->setDefaultButton(QMessageBox::NoButton);
 				msgBox->setWindowModality(Qt::WindowModal);
@@ -467,9 +522,6 @@ void AP_Clamp::Module::toggleProtocol( void ) {
         executeMode = IDLE;
         setActive( false );
 	 }
-
-//    ToggleProtocolEvent event( this, protocolOn );
-//    RT::System::getInstance()->postEvent( &event );
 }
 
 void AP_Clamp::Module::togglePace( void ) {
@@ -493,9 +545,6 @@ void AP_Clamp::Module::togglePace( void ) {
         executeMode = IDLE;
         setActive( false );
     }
-
-//    TogglePaceEvent event( this, paceOn );
-//    RT::System::getInstance()->postEvent( &event );
 }
 
 /*** Other Functions ***/
@@ -564,10 +613,7 @@ void AP_Clamp::Module::createGUI( void ) {
 	 MainWindow::getInstance()->createMdi(subWindow); 
 	 subWindow->setWidget(this);
 
-//    mainWindow = new AP_ClampUI(this);
     mainWindow = new AP_ClampUI(subWindow);
-    // Construct Main Layout - vertical layout
-//    QBoxLayout *layout = new QVBoxLayout(subWindow);
     QVBoxLayout *layout = new QVBoxLayout(this);
 	 setLayout(layout);
 	 layout->addWidget(mainWindow);
@@ -743,85 +789,6 @@ void AP_Clamp::Module::refreshDisplay(void) {
         }        
     }
 }
-
-/*
-// RT::Events - Called from GUI thread, handled by RT thread
-AP_Clamp::Module::ToggleProtocolEvent::ToggleProtocolEvent( Module *m, bool o )
-    : module( m ), on( o ) {
-}
-
-int AP_Clamp::Module::ToggleProtocolEvent::callback( void ) {
-    if( on ) { // Start protocol, reinitialize parameters to start values
-        
-        module->executeMode = IDLE; // Keep on IDLE until update is finished
-        module->voltageClamp = false;
-        module->modelInit = true;
-        module->reset();
-        module->modelCell->resetModel();
-        module->beatNum = 0; // beatNum is changed at beginning of protocol, so it must start at 0 instead of 1
-        module->stepTracker = -1; // Used to highlight the current step in list box, -1 to force first step to be highlighted
-        module->protocolMode = STEPINIT; 
-        module->executeMode = PROTOCOL;
-//        module->setActive( true );
-    }
-    else { // Stop protocol, only called when protocol button is unclicked in the middle of a run
-        if( module->recording ) { // Stop data recorder if recording
-            ::Event::Object event(::Event::STOP_RECORDING_EVENT);
-            ::Event::Manager::getInstance()->postEventRT(&event);
-        }        
-        module->executeMode = IDLE;
-//        module->setActive( false );
-    }
-    
-    return 0;
-}
-
-AP_Clamp::Module::TogglePaceEvent::TogglePaceEvent( Module *m, bool o )
-    : module( m ), on( o ) {
-}
-
-int AP_Clamp::Module::TogglePaceEvent::callback( void ) {
-    if( on ) { // Start protocol, reinitialize parameters to start values
-        module->reset();
-        module->executeMode = PACE;
-        module->setActive( true );
-    }
-    else { // Stop protocol, only called when pace button is unclicked in the middle of a run
-        if( module->recording ) { // Stop data recorder if recording
-            ::Event::Object event(::Event::STOP_RECORDING_EVENT);
-            ::Event::Manager::getInstance()->postEventRT(&event);
-        }        
-        module->executeMode = IDLE;
-        module->setActive( false );
-    }
-    
-    return 0;
-}
-
-AP_Clamp::Module::ToggleThresholdEvent::ToggleThresholdEvent( Module *m, bool o )
-    : module( m ), on( o ) {
-}
-
-int AP_Clamp::Module::ToggleThresholdEvent::callback( void ) {
-    if( on ) { // Start protocol, reinitialize parameters to start values
-        
-        module->executeMode = THRESHOLD;
-        module->reset();
-        module->Vrest = module->input(0) * 1e3;
-        module->peakVoltageT = module->Vrest;
-        module->stimulusLevel = 2.0; // na
-        module->responseDuration = 0;
-        module->responseTime = 0;
-        module->setActive( true );
-    }
-    else { // Stop protocol, only called when pace button is unclicked in the middle of a run
-        module->executeMode = IDLE;
-        module->setActive( false );
-    }
-    
-    return 0;
-}
-*/
 
 AP_Clamp::Module::ModifyEvent::ModifyEvent( Module *m, int APDr, int mAPD, int sw, int nt, int it,
                                                    int b, double sm, double sl, double c, double ljp, 

@@ -61,7 +61,7 @@ AddStepDialog::AddStepDialog( QWidget* parent  ) : QDialog( parent ) {
     recordIdxLabel->setAlignment( Qt::AlignCenter );
     layout4->addWidget( recordIdxLabel );
     recordIdxEdit = new QLineEdit( "", this );
-	recordIdxEdit->setValidator( new QIntValidator(0, 10000, recordIdxEdit) );
+	recordIdxEdit->setValidator( new QIntValidator(0, 99, recordIdxEdit) );
     layout4->addWidget( recordIdxEdit );
     AddStepDialogLayout->addLayout( layout4 );
 

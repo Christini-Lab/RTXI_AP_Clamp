@@ -17,7 +17,7 @@
  */
 
 /*** INTRO
- * Current Scaling Dynamic Clamp
+ * Action Potential Clamp
  * 
  * APC_Protocol.h
  * Contains classes for customizeable protocol
