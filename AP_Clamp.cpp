@@ -57,9 +57,9 @@ extern "C" Plugin::Object *createRTXIPlugin(void) {
 // Inputs, Outputs, and Parameters
 static Workspace::variable_t vars[] = {
     {
-        "Input Voltage (V)", "Input Voltage (V)", Workspace::INPUT, }, // Voltage of target cell, from amplifier, input(0)
+        "Input (V or A)", "Input (V or A)", Workspace::INPUT, }, // Voltage or current of target cell, from amplifier, input(0)
     {
-        "Output Current (A)", "Output Current (A)", Workspace::OUTPUT, }, //  Current sent to target cell, to internal input, output(0)
+        "Output (V or A)", "Output (V or A)", Workspace::OUTPUT, }, //  Current sent to target cell, to internal input, output(0)
     // States
     {
         "Time (ms)", "Time Elapsed (ms)", Workspace::STATE, }, 
@@ -69,11 +69,6 @@ static Workspace::variable_t vars[] = {
         "Beat Number", "Number of beats", Workspace::STATE, },
     {
         "APD (ms)", "Action Potential Duration of cell (ms)", Workspace::STATE, },
-    // Hidden States
-    {
-        "Target Curent (A/F)", "Value of model current targeted for scaling (A/F)", Workspace::STATE, },
-    {
-        "Scaled Target Current (A/F)", "Value of model current after scaling (A/F)", Workspace::STATE, },
     // Parameters
     {
         "APD Repolarization %", "APD Repolarization %", Workspace::PARAMETER, },
@@ -365,8 +360,6 @@ void AP_Clamp::Module::initialize(void){ // Initialize all variables, protocol, 
     voltage = 0;
     beatNum = 0;
     APD = 0;
-    targetCurrent = 0;
-    scaledCurrent = 0;
 	 executeMode = IDLE;
 
     // Parameters
@@ -417,8 +410,6 @@ void AP_Clamp::Module::reset( void ) {
 
     // Protocol variables
     currentStep = 0;
-    targetCurrent = 0;
-    scaledCurrent = 0;
 }
 
 void AP_Clamp::Module::addStep( void ) {
@@ -600,11 +591,11 @@ void AP_Clamp::Module::rebuildListBox( void ) {
 void AP_Clamp::Module::createGUI( void ) {
 
     QMdiSubWindow *subWindow  = new QMdiSubWindow;
-    subWindow->setWindowTitle( QString::number( getID() ) + " Current Scaling Dynamic Clamp" );
-	 subWindow->setWindowIcon(QIcon("/usr/local/lib/rtxi/RTXI-widget-icon.png"));
-	 subWindow->setMinimumSize(300,450);
-	 MainWindow::getInstance()->createMdi(subWindow); 
-	 subWindow->setWidget(this);
+    subWindow->setWindowTitle( QString::number( getID() ) + " Action Potential Dynamic Clamp" );
+    subWindow->setWindowIcon(QIcon("/usr/local/lib/rtxi/RTXI-widget-icon.png"));
+    subWindow->setMinimumSize(300,450);
+    MainWindow::getInstance()->createMdi(subWindow); 
+    subWindow->setWidget(this);
 
     mainWindow = new AP_ClampUI(subWindow);
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -660,8 +651,6 @@ void AP_Clamp::Module::createGUI( void ) {
     setData( Workspace::STATE, 1, &voltage );
     setData( Workspace::STATE, 2, &beatNum );
     setData( Workspace::STATE, 3, &APD );
-    setData( Workspace::STATE, 4, &targetCurrent );
-    setData( Workspace::STATE, 5, &scaledCurrent );
 
 	 subWindow->show();
 } // End createGUI()

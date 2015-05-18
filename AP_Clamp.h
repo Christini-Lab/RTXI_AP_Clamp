@@ -112,9 +112,6 @@ namespace AP_Clamp {
         int stepTime; // Time tracker for step
         int stepEndTime; // Time end tracker for step
         int cycleStartTime; // Time tracker for BCL
-        double totalModelCurrent; // Total current in the model during voltage clamp
-        double targetCurrent; // Current that will be scaled
-        double scaledCurrent; // Current after it has been scaled
         double period; // Period based on RTXI thread rate
         int BCLInt; // BCL / period (unitless)
         int pBCLInt; // BCL for protocol
