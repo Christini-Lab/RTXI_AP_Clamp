@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Weill Medical College of Cornell University
+ * Copyright (C) 2015 Weill Medical College of Cornell University
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
@@ -17,11 +17,11 @@
  */
 
 /*** INTRO
- * Current Scaling Dynamic Clamp
+ * Action Potential Clamp
  * 
  * AP_Clamp.cpp, v1.0
  *
- * Author: Francis A. Ortega (2011)
+ * Author: Francis A. Ortega (2015)
  *
  * Notes in header
  *

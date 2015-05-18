@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Weill Medical College of Cornell University
+ * Copyright (C) 2015 Weill Medical College of Cornell University
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
@@ -22,7 +22,7 @@
  * APC_Protocol.h
  * Contains classes for customizeable protocol
  *
- * Author: Francis A. Ortega (2011)
+ * Author: Francis A. Ortega (2015)
  *
  *** NOTES
  *
