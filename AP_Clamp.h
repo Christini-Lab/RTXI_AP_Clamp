@@ -75,7 +75,6 @@ namespace AP_Clamp {
         // Flags
         enum executeMode_t { IDLE, THRESHOLD, PACE, PROTOCOL } executeMode;
         enum protocolMode_t { STEPINIT, EXEC, END } protocolMode;
-        bool recordData; // True if data will be recorded
         bool recording; // True if data recording is recording
         bool voltageClamp;
         bool vmRecording;
@@ -101,7 +100,6 @@ namespace AP_Clamp {
         int BCL; // Basic cycle length
         double stimMag; // Stimulation magnitude (nA)
         double stimLength; // Stimulation length (ms)
-        double Cm; // Membrane capacitance (pF)
         double LJP; // Liquid junction potential (mV);
 
         // Protocol Variables
@@ -164,7 +162,7 @@ namespace AP_Clamp {
         class ModifyEvent : public RT::Event {
         public:
             ModifyEvent( Module *, int, int, int, int, int, int,
-                         double, double, double, double, bool );
+                         double, double, double );
             ~ModifyEvent( void ) { };
 
             int callback( void );
@@ -179,48 +177,10 @@ namespace AP_Clamp {
             int BCLValue;
             double stimMagValue;
             double stimLengthValue;
-            double CmValue;
             double LJPValue;
-            bool recordDataValue;
 
         }; // class ModifyEvent
-/*
-        class ToggleProtocolEvent : public RT::Event {
-        public:
-            ToggleProtocolEvent( Module *, bool );
-            ~ToggleProtocolEvent( void ) { };
-
-            int callback( void );
-
-        private:
-            Module *module;
-            bool on;            
-        }; // class ToggleProtocolEvent
-
-        class TogglePaceEvent : public RT::Event {
-        public:
-            TogglePaceEvent( Module *, bool );
-            ~TogglePaceEvent( void ) { };
-
-            int callback( void );
-
-        private:
-            Module *module;
-            bool on;            
-        }; // class TogglePaceEvent
-
-        class ToggleThresholdEvent : public RT::Event {
-        public:
-            ToggleThresholdEvent( Module *, bool );
-            ~ToggleThresholdEvent( void ) { };
-
-            int callback( void );
-
-        private:
-            Module *module;
-            bool on;            
-        }; // class ToggleThresholdEvent
-*/
+        
     protected:
         void doLoad( const Settings::Object::State & );
         void doSave( Settings::Object::State & ) const;

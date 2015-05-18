@@ -65,8 +65,6 @@ class AP_ClampUI : public QWidget {
 		QLineEdit* stimMagEdit;
 		QLabel* stimLengthLabel;
 		QLineEdit* stimLengthEdit;
-		QLabel* CmLabel;
-		QLineEdit* CmEdit;
 		QLabel* LJPLabel;
 		QLineEdit* LJPEdit;
 		QWidget* tab;

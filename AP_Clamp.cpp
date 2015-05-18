@@ -92,19 +92,17 @@ static Workspace::variable_t vars[] = {
     {
         "Stim Length (ms)", "Duration of stimulation pulse (nA", Workspace::PARAMETER, }, 
     {
-        "Cm (pF)", "Membrane capacitance of target cell (pF)", Workspace::PARAMETER, },
-    {
         "LJP (mv)", "Liquid Junction Potential (mV)", Workspace::PARAMETER, },    
 };
 
 // Number of variables in vars
 static size_t num_vars = sizeof(vars) / sizeof(Workspace::variable_t);
 
-AP_Clamp::Module::Module(void) : QWidget( MainWindow::getInstance()->centralWidget() ), RT::Thread( 0 ), Workspace::Instance( "Current-scaling Dynamic Clamp", vars, num_vars ) {
+AP_Clamp::Module::Module(void) : QWidget( MainWindow::getInstance()->centralWidget() ), RT::Thread( 0 ), Workspace::Instance( "Action Potential Clamp", vars, num_vars ) {
 
     // Build Module GUI
 	 QWidget::setAttribute(Qt::WA_DeleteOnClose);
-    createGUI();        
+    createGUI();
     initialize(); // Initialize parameters, initialize states, reset model, and update rate
     refreshDisplay();
     show();
@@ -360,7 +358,6 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
 
 void AP_Clamp::Module::initialize(void){ // Initialize all variables, protocol, and model cell
     protocol = new Protocol();
-
     protocolContainer = &protocol->protocolContainer; // Pointer to protocol container
         
     // States
@@ -381,9 +378,8 @@ void AP_Clamp::Module::initialize(void){ // Initialize all variables, protocol, 
     BCL = 1000;
     stimMag = 4;
     stimLength = 1;
-    Cm = 100;
     LJP = 0;
-
+    
     mainWindow->APDRepolEdit->setText( QString::number(APDRepol) );
     mainWindow->minAPDEdit->setText( QString::number(minAPD) );
     mainWindow->stimWindowEdit->setText( QString::number(stimWindow) );
@@ -392,11 +388,9 @@ void AP_Clamp::Module::initialize(void){ // Initialize all variables, protocol, 
     mainWindow->BCLEdit->setText( QString::number(BCL) );
     mainWindow->stimMagEdit->setText( QString::number(stimMag) );
     mainWindow->stimLengthEdit->setText( QString::number(stimLength) );
-    mainWindow->CmEdit->setText( QString::number(Cm) );
     mainWindow->LJPEdit->setText( QString::number(LJP) );
-
+    
     // Flags
-    recordData = mainWindow->recordDataCheckBox->isChecked();
     recording = false;
     voltageClamp = false;
     loadedFile = "";
@@ -630,8 +624,7 @@ void AP_Clamp::Module::createGUI( void ) {
     mainWindow->BCLEdit->setValidator( new QIntValidator(mainWindow->BCLEdit) );
     mainWindow->stimMagEdit->setValidator( new QDoubleValidator(mainWindow->stimMagEdit) );
     mainWindow->stimLengthEdit->setValidator( new QDoubleValidator(mainWindow->stimLengthEdit) );
-    mainWindow->CmEdit->setValidator( new QDoubleValidator(mainWindow->CmEdit) );
-    mainWindow->LJPEdit->setValidator( new QDoubleValidator(mainWindow->CmEdit) );
+    mainWindow->LJPEdit->setValidator( new QDoubleValidator(mainWindow->LJPEdit) );
     
     // Connect MainWindow elements to slot functions
     QObject::connect( mainWindow->addStepButton, SIGNAL(clicked(void)), this, SLOT( addStep(void)) );
@@ -639,7 +632,6 @@ void AP_Clamp::Module::createGUI( void ) {
     QObject::connect( mainWindow->saveProtocolButton, SIGNAL(clicked(void)), this, SLOT( saveProtocol(void)) );
     QObject::connect( mainWindow->loadProtocolButton, SIGNAL(clicked(void)), this, SLOT( loadProtocol(void)) );
     QObject::connect( mainWindow->clearProtocolButton, SIGNAL(clicked(void)), this, SLOT( clearProtocol(void)) );
-    QObject::connect( mainWindow->recordDataCheckBox, SIGNAL(clicked(void)), this, SLOT( modify(void)) );
     QObject::connect( mainWindow->startProtocolButton, SIGNAL(toggled(bool)), this, SLOT( toggleProtocol(void)) );
     QObject::connect( mainWindow->thresholdButton, SIGNAL(clicked(void)), this, SLOT( toggleThreshold(void)) );
     QObject::connect( mainWindow->staticPacingButton, SIGNAL(clicked(void)), this, SLOT( togglePace(void)) );
@@ -652,7 +644,6 @@ void AP_Clamp::Module::createGUI( void ) {
     QObject::connect( mainWindow->BCLEdit, SIGNAL(returnPressed(void)), this, SLOT( modify(void)) );
     QObject::connect( mainWindow->stimMagEdit, SIGNAL(returnPressed(void)), this, SLOT( modify(void)) );
     QObject::connect( mainWindow->stimLengthEdit, SIGNAL(returnPressed(void)), this, SLOT( modify(void)) );
-    QObject::connect( mainWindow->CmEdit, SIGNAL(returnPressed(void)), this, SLOT( modify(void)) );
     QObject::connect( mainWindow->LJPEdit, SIGNAL(returnPressed(void)), this, SLOT( modify(void)) );
     QObject::connect(timer, SIGNAL(timeout(void)), this, SLOT(refreshDisplay(void)));
 
@@ -701,7 +692,6 @@ void AP_Clamp::Module::doLoad(const Settings::Object::State &s) {
     mainWindow->BCLEdit->setText( QString::number( s.loadInteger("BCL") ) );
     mainWindow->stimMagEdit->setText( QString::number( s.loadInteger("Stim Mag") ) );
     mainWindow->stimLengthEdit->setText( QString::number( s.loadInteger("Stim Length") ) );
-    mainWindow->CmEdit->setText( QString::number( s.loadInteger("Cm") ) );
     mainWindow->LJPEdit->setText( QString::number( s.loadInteger("LJP") ) );    
     
     modify();
@@ -728,7 +718,6 @@ void AP_Clamp::Module::doSave(Settings::Object::State &s) const {
     s.saveInteger( "BCL", BCL );
     s.saveDouble( "Stim Mag", stimMag );
     s.saveDouble( "Stim Length", stimLength );
-    s.saveDouble( "Cm", Cm );
     s.saveDouble( "LJP", LJP );
 }
 
@@ -741,12 +730,10 @@ void AP_Clamp::Module::modify(void) {
     int b = mainWindow->BCLEdit->text().toInt();
     double sm = mainWindow->stimMagEdit->text().toDouble();
     double sl = mainWindow->stimLengthEdit->text().toDouble();
-    double c = mainWindow->CmEdit->text().toDouble();
     double ljp = mainWindow->LJPEdit->text().toDouble();
-    bool rd = mainWindow->recordDataCheckBox->isChecked();
 
     if( APDr == APDRepol && mAPD == minAPD && sw == stimWindow && nt == numTrials && it == intervalTime
-        && b == BCL && sm == stimMag && sl == stimLength && c == Cm && ljp == LJP && rd == recordData ) // If nothing has changed
+        && b == BCL && sm == stimMag && sl == stimLength && ljp == LJP ) // If nothing has changed
         return ;
 
     // Set parameters
@@ -758,10 +745,9 @@ void AP_Clamp::Module::modify(void) {
     setValue( 5, b );
     setValue( 6, sm );
     setValue( 7, sl );
-    setValue( 8, c );
-    setValue( 9, ljp );
+    setValue( 8, ljp );
 
-    ModifyEvent event( this, APDr, mAPD, sw, nt, it, b, sm, sl, c, ljp, rd );
+    ModifyEvent event( this, APDr, mAPD, sw, nt, it, b, sm, sl, ljp );
     RT::System::getInstance()->postEvent( &event );
 }
 
@@ -789,15 +775,14 @@ void AP_Clamp::Module::refreshDisplay(void) {
     }
 }
 
-AP_Clamp::Module::ModifyEvent::ModifyEvent( Module *m, int APDr, int mAPD, int sw, int nt, int it,
-                                                   int b, double sm, double sl, double c, double ljp, 
-																	bool rd ) 
-                                                 : module( m ), APDRepolValue( APDr ), 
-																   minAPDValue( mAPD ), stimWindowValue( sw ),
-                                                   numTrialsValue( nt ), intervalTimeValue( it ), 
-																	BCLValue( b ), stimMagValue( sm ), 
-																	stimLengthValue( sl ), CmValue( c ), 
-																	LJPValue( ljp ), recordDataValue( rd ) { }
+AP_Clamp::Module::ModifyEvent::ModifyEvent(
+                                           Module *m, int APDr, int mAPD, int sw, int nt, int it,
+                                           int b, double sm, double sl, double ljp ) 
+    : module( m ), APDRepolValue( APDr ), 
+      minAPDValue( mAPD ), stimWindowValue( sw ),
+      numTrialsValue( nt ), intervalTimeValue( it ), 
+      BCLValue( b ), stimMagValue( sm ), 
+      stimLengthValue( sl ), LJPValue( ljp ) { }
 
 int AP_Clamp::Module::ModifyEvent::callback( void ) {
     module->APDRepol = APDRepolValue;
@@ -808,9 +793,7 @@ int AP_Clamp::Module::ModifyEvent::callback( void ) {
     module->BCLInt = module->BCL / module->period; // Update BCLInt when BCL is updated
     module->stimMag = stimMagValue;
     module->stimLength = stimLengthValue;
-    module->Cm = CmValue;
     module->LJP = LJPValue;
-    module->recordData = recordDataValue;
     
     return 0;
 }

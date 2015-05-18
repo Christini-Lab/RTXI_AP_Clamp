@@ -1,3 +1,32 @@
+/*
+ * Copyright (C) 2015 Weill Medical College of Cornell University
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation; either version 2 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+/*** INTRO
+ * Action Potental Clamp
+ * 
+ * APC_MainWindowUI.cpp, v1.0
+ *
+ * Author: Francis A. Ortega (2015)
+ *
+ * Notes in header
+ *
+ ***/
+
 #include "APC_MainWindowUI.h"
 
 #include <QtGui>
@@ -118,12 +147,6 @@ AP_ClampUI::AP_ClampUI( QWidget* parent ) : QWidget( parent ) {
     stimLengthEdit->setAlignment( Qt::AlignHCenter );
     TabPageLayout_2->addWidget( stimLengthEdit, 2, 1 );
 
-    CmLabel = new QLabel( "Cm (pF)", TabPage_2 );
-    TabPageLayout_2->addWidget( CmLabel, 3, 0 );
-    CmEdit = new QLineEdit( "", TabPage_2 );
-    CmEdit->setAlignment( Qt::AlignHCenter );
-    TabPageLayout_2->addWidget( CmEdit, 3, 1 );
-
     LJPLabel = new QLabel( "LJP (mV)", TabPage_2 );
     TabPageLayout_2->addWidget( LJPLabel, 4, 0 );
     LJPEdit = new QLineEdit( "", TabPage_2 );
@@ -150,17 +173,6 @@ AP_ClampUI::AP_ClampUI( QWidget* parent ) : QWidget( parent ) {
     intervalTimeEdit = new QLineEdit( "", tab );
     intervalTimeEdit->setAlignment( Qt::AlignHCenter );
     tabLayout->addWidget( intervalTimeEdit, 1, 1 );
-
-    recordDataLayout = new QHBoxLayout;
-    spacer1a = new QSpacerItem( 0, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-    recordDataLayout->addItem( spacer1a );
-
-    recordDataCheckBox = new QCheckBox( "Record Data", tab );
-    recordDataCheckBox->setTristate( false );
-    recordDataLayout->addWidget( recordDataCheckBox );
-    spacer2a = new QSpacerItem( 0, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-    recordDataLayout->addItem( spacer2a );
-    tabLayout->addLayout( recordDataLayout, 2, 0, 1, 2 );
     
     tabBox->addTab( tab, QString::fromLatin1("") );
 	 tabBox->setTabText( tabBox->indexOf(tab), "Protocol" );
@@ -198,24 +210,22 @@ AP_ClampUI::AP_ClampUI( QWidget* parent ) : QWidget( parent ) {
 	 tab_2->setLayout(tabLayout_2);
 
     APDRepolLabel = new QLabel( "APD Repol (%)", tab_2 );
-    tabLayout_2->addWidget( APDRepolLabel, 0, 1, 1, 2);
+    tabLayout_2->addWidget( APDRepolLabel, 0, 0);
     APDRepolEdit = new QLineEdit( "", tab_2 );
     APDRepolEdit->setAlignment( Qt::AlignCenter );
-    tabLayout_2->addWidget( APDRepolEdit, 0, 3, 1, 1);
+    tabLayout_2->addWidget( APDRepolEdit, 0, 1);
 
     minAPDLabel = new QLabel( "Min APD (ms)", tab_2 );
-    tabLayout_2->addWidget( minAPDLabel, 1, 1, 1, 2);
-
+    tabLayout_2->addWidget( minAPDLabel, 1, 0);
     minAPDEdit = new QLineEdit( "", tab_2 );
     minAPDEdit->setAlignment( Qt::AlignCenter );
-    tabLayout_2->addWidget( minAPDEdit, 1, 3, 1, 1);
+    tabLayout_2->addWidget( minAPDEdit, 1, 1);
 
     stimWindowLabel = new QLabel( "Stim Window (ms)", tab_2 );
-    tabLayout_2->addWidget( stimWindowLabel, 2, 1, 1, 2);
-
+    tabLayout_2->addWidget( stimWindowLabel, 2, 0);
     stimWindowEdit = new QLineEdit( "", tab_2 );
     stimWindowEdit->setAlignment( Qt::AlignCenter );
-    tabLayout_2->addWidget( stimWindowEdit, 2, 3, 1, 1);
+    tabLayout_2->addWidget( stimWindowEdit, 2, 1);
 
     tabBox->addTab( tab_2, QString::fromLatin1("") );
 	 tabBox->setTabText( tabBox->indexOf(tab_2), "APD" );
