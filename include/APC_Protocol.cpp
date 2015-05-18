@@ -51,7 +51,6 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
     case ProtocolStep::PACE:
         BCLEdit->setEnabled(true);
         numBeatsEdit->setEnabled(true);
-        numIterationsEdit->setEnabled(false);
         recordIdxEdit->setEnabled(false);
         waitTimeEdit->setEnabled(false);
         break;
@@ -59,7 +58,6 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
     case ProtocolStep::STARTVM:
         BCLEdit->setEnabled(false);
         numBeatsEdit->setEnabled(false);
-        numIterationsEdit->setEnabled(false);
         recordIdxEdit->setEnabled(true);
         waitTimeEdit->setEnabled(false);
         break;
@@ -67,7 +65,6 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
     case ProtocolStep::STOPVM:
         BCLEdit->setEnabled(false);
         numBeatsEdit->setEnabled(false);
-        numIterationsEdit->setEnabled(false);
         recordIdxEdit->setEnabled(false);
         waitTimeEdit->setEnabled(false);
         break;
@@ -75,15 +72,13 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
     case ProtocolStep::AVERAGE:
         BCLEdit->setEnabled(true);
         numBeatsEdit->setEnabled(true);
-        numIterationsEdit->setEnabled(false);
         recordIdxEdit->setEnabled(true);
         waitTimeEdit->setEnabled(false);
         break;
 
     case ProtocolStep::APCLAMP:
-        BCLEdit->setEnabled(false);
-        numBeatsEdit->setEnabled(false);
-        numIterationsEdit->setEnabled(true);
+        BCLEdit->setEnabled(true);
+        numBeatsEdit->setEnabled(true);
         recordIdxEdit->setEnabled(true);
         waitTimeEdit->setEnabled(false);
         break;
@@ -91,7 +86,6 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
     case ProtocolStep::STARTRECORD:
         BCLEdit->setEnabled(false);
         numBeatsEdit->setEnabled(false);
-        numIterationsEdit->setEnabled(false);
         recordIdxEdit->setEnabled(false);
         waitTimeEdit->setEnabled(false);
         break;
@@ -99,7 +93,6 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
     case ProtocolStep::STOPRECORD:
         BCLEdit->setEnabled(false);
         numBeatsEdit->setEnabled(false);
-        numIterationsEdit->setEnabled(false);
         recordIdxEdit->setEnabled(false);
         waitTimeEdit->setEnabled(false);
         break;
@@ -107,7 +100,6 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
     case ProtocolStep::WAIT:
         BCLEdit->setEnabled(false);
         numBeatsEdit->setEnabled(false);
-        numIterationsEdit->setEnabled(false);
         recordIdxEdit->setEnabled(false);
         waitTimeEdit->setEnabled(true);
         break;
@@ -118,9 +110,7 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
     bool check = true;
     BCL = BCLEdit->text();
     stepType = QString::number( stepComboBox->currentIndex() );
-    numBeats = numBeatsEdit->text();
-    numIterations = numIterationsEdit->text();
-    recordIdx = recordIdxEdit->text();
+    numBeats = numBeatsEdit->text();    recordIdx = recordIdxEdit->text();
     waitTime = waitTimeEdit->text();
  
     switch( stepComboBox->currentIndex() ) {
@@ -140,7 +130,7 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
         break;
         
     case 4: // AP Clamp
-        if (recordIdx == "" || numIterations == "") check = false;
+        if (recordIdx == "" || BCL == "" || numBeats == "")  check = false;
         break;
         
     case 5: // Start Data Recording
@@ -168,7 +158,6 @@ vector<QString> AddStepInputDialog::gatherInput( void ) {
         inputAnswers.push_back( stepType );
         inputAnswers.push_back( BCL );
         inputAnswers.push_back( numBeats );
-        inputAnswers.push_back( numIterations );
         inputAnswers.push_back( recordIdx );
         inputAnswers.push_back( waitTime );
         return inputAnswers;
@@ -176,9 +165,8 @@ vector<QString> AddStepInputDialog::gatherInput( void ) {
 }
 
 /* Protocol Step Class */
-ProtocolStep::ProtocolStep( stepType_t st, int bcl, int nb, int ni, int ri, int w ) :
-		stepType(st), BCL(bcl), numBeats(nb), numIterations(ni), recordIdx(ri), 
-		waitTime(w) { }
+ProtocolStep::ProtocolStep( stepType_t st, int bcl, int nb, int ri, int w ) :
+		stepType(st), BCL(bcl), numBeats(nb), recordIdx(ri), waitTime(w) { }
 
 ProtocolStep::~ProtocolStep( void ) { }
 
@@ -204,9 +192,8 @@ bool Protocol::addStep( QWidget *parent ) {
                 (ProtocolStep::stepType_t)( inputAnswers[0].toInt() ), // stepType
                 inputAnswers[1].toInt(), // BCL
                 inputAnswers[2].toInt(), // numBeats
-                inputAnswers[3].toInt(), // numIterations
-                inputAnswers[4].toInt(), // recordIdx
-                inputAnswers[5].toInt() // waitTime
+                inputAnswers[3].toInt(), // recordIdx
+                inputAnswers[4].toInt() // waitTime
             ) ) );
         return true;
     }
@@ -230,9 +217,8 @@ bool Protocol::addStep( QWidget *parent, int idx ) {
                 (ProtocolStep::stepType_t)( inputAnswers[0].toInt() ), // stepType
                 inputAnswers[1].toInt(), // BCL
                 inputAnswers[2].toInt(), // numBeats
-                inputAnswers[3].toInt(), // numIterations
-                inputAnswers[4].toInt(), // recordIdx
-                inputAnswers[5].toInt() // waitTime
+                inputAnswers[3].toInt(), // recordIdx
+                inputAnswers[4].toInt() // waitTime
             ) ) );
         return true;
     }
@@ -346,7 +332,6 @@ QString Protocol::loadProtocol( QWidget *parent ) {
                 (ProtocolStep::stepType_t)stepElement.attribute("stepType").toInt(),
                 stepElement.attribute( "BCL" ).toInt(),
                 stepElement.attribute( "numBeats" ).toInt(),
-                stepElement.attribute( "numIterations" ).toInt(),
                 stepElement.attribute( "recordIdx" ).toInt(),
                 stepElement.attribute( "waitTime" ).toInt()
             ) ) ); // Add step to segment container            
@@ -408,7 +393,6 @@ void Protocol::loadProtocol( QWidget *parent, QString fileName ) {
                 (ProtocolStep::stepType_t)stepElement.attribute("stepType").toInt(),
                 stepElement.attribute( "BCL" ).toInt(),
                 stepElement.attribute( "numBeats" ).toInt(),
-                stepElement.attribute( "numIterations" ).toInt(),
                 stepElement.attribute( "recordIdx" ).toInt(),
                 stepElement.attribute( "waitTime" ).toInt()
             ) ) ); // Add step to segment container            
@@ -429,7 +413,6 @@ QDomElement Protocol::stepToNode( QDomDocument &doc, const ProtocolStepPtr stepP
     stepElement.setAttribute( "stepType", QString::number( stepPtr->stepType ) );
     stepElement.setAttribute( "BCL", QString::number( stepPtr->BCL ) );
     stepElement.setAttribute( "numBeats", QString::number( stepPtr->numBeats ) );
-    stepElement.setAttribute( "numIterations", QString::number( stepPtr->numIterations ) );
     stepElement.setAttribute( "recordIdx", QString::number( stepPtr->recordIdx ) );
     stepElement.setAttribute( "waitTime", stepPtr->waitTime );
 
@@ -471,7 +454,8 @@ QString Protocol::getStepDescription( int stepNumber ) {
 
     case ProtocolStep::APCLAMP:
         type = "AP Clamp ";
-        description = type + ": Index(" + QString::number( step->recordIdx ) + ")";
+        description = type + ": Index(" + QString::number( step->recordIdx ) + ") | " + QString::number( step->numBeats ) +
+            " iterations - Repeats every " + QString::number( step->BCL ) + "ms";
         break;
 
     case ProtocolStep::STARTRECORD:

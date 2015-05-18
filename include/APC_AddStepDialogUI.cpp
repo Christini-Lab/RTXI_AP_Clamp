@@ -46,15 +46,6 @@ AddStepDialog::AddStepDialog( QWidget* parent  ) : QDialog( parent ) {
 	 numBeatsEdit->setValidator( new QIntValidator(0, 10000, numBeatsEdit) );
     layout2->addWidget( numBeatsEdit );
     AddStepDialogLayout->addLayout( layout2 );
-    
-    layout3 = new QHBoxLayout;
-    numIterationsLabel = new QLabel( "Number of Iterations", this );
-    numIterationsLabel->setAlignment( Qt::AlignCenter );
-    layout3->addWidget( numIterationsLabel );
-    numIterationsEdit = new QLineEdit( "", this );
-    numIterationsEdit->setValidator( new QIntValidator(0, 10000, numIterationsEdit) );
-    layout3->addWidget( numIterationsEdit );
-    AddStepDialogLayout->addLayout( layout3 );
 
     layout4 = new QHBoxLayout;
     recordIdxLabel = new QLabel( "Recording Idx", this );

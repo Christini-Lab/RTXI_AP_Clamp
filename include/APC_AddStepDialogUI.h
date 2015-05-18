@@ -15,8 +15,6 @@ class AddStepDialog : public QDialog {
 		QLineEdit* BCLEdit;
 		QLabel* numBeatsLabel;
 		QLineEdit* numBeatsEdit;
-        QLabel* numIterationsLabel;
-		QLineEdit* numIterationsEdit;
         QLabel* recordIdxLabel;
 		QLineEdit* recordIdxEdit;
 		QLabel* waitTimeLabel;
@@ -30,7 +28,6 @@ class AddStepDialog : public QDialog {
 		QVBoxLayout* AddStepDialogLayout;
 		QHBoxLayout* layout1;
 		QHBoxLayout* layout2;
-		QHBoxLayout* layout3;
 		QHBoxLayout* layout4;
 		QHBoxLayout* layout5;
 		QHBoxLayout* buttonGroupLayout;

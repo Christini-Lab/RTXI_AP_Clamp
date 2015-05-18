@@ -265,7 +265,6 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                                 recordingIndex = stepPtr->recordIdx;
                                 apClampData = &voltageData[recordingIndex];
                                 apClampCnt = 1;
-                                std::cout << "APCLAMP Data size: " << apClampData->size() << std::endl;
                             }
                         }
                         // Wait Init
@@ -330,7 +329,7 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                     beatNum++;
                     cycleStartTime = stepTime;
                 }
-                voltage = avgRecordData->at(stepTime - cycleStartTime);
+                voltage = apClampData->at(stepTime - cycleStartTime);
                 output(0) = voltage;
             }
             

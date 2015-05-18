@@ -44,7 +44,6 @@ class AddStepInputDialog: public AddStepDialog {
     QString stepType;
     QString BCL;
     QString numBeats;
-    QString numIterations;
     QString recordIdx;
     QString waitTime;
     
@@ -66,11 +65,10 @@ public:
     enum stepType_t { PACE, STARTVM, STOPVM, AVERAGE, APCLAMP, STARTRECORD, STOPRECORD, WAIT } stepType;    
     int BCL; // ms
     int numBeats;
-    int numIterations;
     int recordIdx;
     int waitTime; // ms
     
-    ProtocolStep( stepType_t, int, int, int, int, int );
+    ProtocolStep( stepType_t, int, int, int, int );
     ~ProtocolStep( void );
     int stepLength ( double );
 };
