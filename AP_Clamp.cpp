@@ -112,7 +112,7 @@ AP_Clamp::Module::~Module(void) {
 
 void AP_Clamp::Module::execute(void) { // Real-Time Execution
     voltage = input(0) * 1e3 - LJP;
-    voltage = 10;
+    
     switch( executeMode ) {
     case IDLE:
         break;
@@ -300,7 +300,7 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                     outputCurrent = 0;
 
                 if ( stepType == ProtocolStep::AVERAGE ) {
-                    if ( avgCnt == stepPtr->numBeats )
+                    if ( avgCnt == stepPtr->numBeats ) // Voltage in mV
                         avgRecordData->at(stepTime - cycleStartTime) =
                             (voltage + avgRecordData->at(stepTime - cycleStartTime)) / beatNum;
                     else
@@ -323,11 +323,11 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                     cycleStartTime = stepTime;
                 }
                 voltage = apClampData->at(stepTime - cycleStartTime);
-                output(0) = voltage;
+                output(0) = (voltage * 1e-3) + (LJP * 1e-3);
             }
             
             if ( vmRecording ) {
-                vmRecordData->push_back(voltage);
+                vmRecordData->push_back(voltage); // Voltage in mV
             }
             
             if( stepTime >= stepEndTime ) {
