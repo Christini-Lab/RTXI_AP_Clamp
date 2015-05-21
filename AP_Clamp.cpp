@@ -60,6 +60,8 @@ static Workspace::variable_t vars[] = {
         "Input (V or A)", "Input (V or A)", Workspace::INPUT, }, // Voltage or current of target cell, from amplifier, input(0)
     {
         "Output (V or A)", "Output (V or A)", Workspace::OUTPUT, }, //  Current sent to target cell, to internal input, output(0)
+    {
+        "Digital Output", "Digital Output", Workspace::OUTPUT, },
     // States
     {
         "Time (ms)", "Time Elapsed (ms)", Workspace::STATE, }, 
@@ -320,8 +322,11 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
             else {
                 if (stepTime - cycleStartTime >= pBCLInt) {
                     beatNum++;
+                    output(1) = 1;
                     cycleStartTime = stepTime;
                 }
+                if (stepTime - cycleStartTime > (100 / period)) // Digital out on for 100ms
+                    output(1) = 0;
                 voltage = apClampData->at(stepTime - cycleStartTime);
                 output(0) = (voltage * 1e-3) + (LJP * 1e-3);
             }
