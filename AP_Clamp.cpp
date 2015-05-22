@@ -322,10 +322,10 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
             else {
                 if (stepTime - cycleStartTime >= pBCLInt) {
                     beatNum++;
-                    output(1) = 1;
+                    output(1) = stepPtr->digitalOut;
                     cycleStartTime = stepTime;
                 }
-                if (stepTime - cycleStartTime > (100 / period)) // Digital out on for 100ms
+                if (stepTime - cycleStartTime > (50 / period) && stepPtr->digitalOut != 0) // Digital out on for 50ms
                     output(1) = 0;
                 voltage = apClampData->at(stepTime - cycleStartTime);
                 output(0) = (voltage * 1e-3) + (LJP * 1e-3);

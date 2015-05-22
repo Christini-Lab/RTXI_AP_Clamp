@@ -118,8 +118,10 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
     bool check = true;
     BCL = BCLEdit->text();
     stepType = QString::number( stepComboBox->currentIndex() );
-    numBeats = numBeatsEdit->text();    recordIdx = recordIdxEdit->text();
+    numBeats = numBeatsEdit->text();
+    recordIdx = recordIdxEdit->text();
     waitTime = waitTimeEdit->text();
+    digitalOut = digitalOutEdit->text();
  
     switch( stepComboBox->currentIndex() ) {
     case 0: // Pace
