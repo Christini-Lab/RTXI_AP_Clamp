@@ -304,7 +304,7 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                 if ( stepType == ProtocolStep::AVERAGE ) {
                     if ( avgCnt == stepPtr->numBeats ) // Voltage in mV
                         avgRecordData->at(stepTime - cycleStartTime) =
-                            (voltage + avgRecordData->at(stepTime - cycleStartTime)) / beatNum;
+                            (voltage + avgRecordData->at(stepTime - cycleStartTime)) / avgCnt;
                     else
                         avgRecordData->at(stepTime - cycleStartTime) = voltage + avgRecordData->at(stepTime - cycleStartTime);
                 }
@@ -438,7 +438,7 @@ void AP_Clamp::Module::deleteStep( void ) {
 }
 
 void AP_Clamp::Module::saveProtocol( void ) {
-    protocol->saveProtocol( this );
+    loadedFile = protocol->saveProtocol( this );
 }
 
 void AP_Clamp::Module::loadProtocol( void ) {
@@ -480,7 +480,6 @@ void AP_Clamp::Module::toggleProtocol( void ) {
 	 setActive(false);
 	 AP_Clamp_SyncEvent event;
 	 RT::System::getInstance()->postEvent(&event);
-
     if( protocolOn ){
         if( protocolContainer->size() <= 0 ) {
 				QMessageBox * msgBox = new QMessageBox;
@@ -750,8 +749,7 @@ void AP_Clamp::Module::refreshDisplay(void) {
     mainWindow->voltageEdit->setText( QString::number(voltage) );
     mainWindow->beatNumEdit->setText( QString::number(beatNum) );
     mainWindow->APDEdit->setText( QString::number(APD) );
-
-
+    
     if( executeMode == IDLE ) {
         if( mainWindow->startProtocolButton->isChecked() && !protocolOn ) {
             mainWindow->startProtocolButton->setChecked( false );

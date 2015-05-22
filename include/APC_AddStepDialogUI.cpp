@@ -63,7 +63,7 @@ AddStepDialog::AddStepDialog( QWidget* parent  ) : QDialog( parent ) {
     BCLLabel->setAlignment( Qt::AlignCenter );
     layout1->addWidget( BCLLabel );
     BCLEdit = new QLineEdit( "", this );
-	 BCLEdit->setValidator( new QDoubleValidator(0, 1000, 2, BCLEdit) );
+	 BCLEdit->setValidator( new QDoubleValidator(0, 999999, 2, BCLEdit) );
     layout1->addWidget( BCLEdit );
     AddStepDialogLayout->addLayout( layout1 );
 
@@ -90,9 +90,18 @@ AddStepDialog::AddStepDialog( QWidget* parent  ) : QDialog( parent ) {
     waitTimeLabel->setAlignment( Qt::AlignCenter );
     layout5->addWidget( waitTimeLabel );
     waitTimeEdit = new QLineEdit( "", this );
-	 waitTimeEdit->setValidator( new QDoubleValidator(0, 10000, 2, waitTimeEdit) );
+	 waitTimeEdit->setValidator( new QIntValidator(0, 999999, waitTimeEdit) );
     layout5->addWidget( waitTimeEdit );
     AddStepDialogLayout->addLayout( layout5 );
+
+    layout6 = new QHBoxLayout;  
+    digitalOutLabel = new QLabel( "Digital Output", this );
+    digitalOutLabel->setAlignment( Qt::AlignCenter );
+    layout6->addWidget( digitalOutLabel );
+    digitalOutEdit = new QLineEdit( "", this );
+	digitalOutEdit->setValidator( new QIntValidator(0, 1, digitalOutEdit) );
+    layout6->addWidget( digitalOutEdit );
+    AddStepDialogLayout->addLayout( layout6 );
 
     buttonGroup = new QButtonGroup( this );
 	 buttonGroupBox = new QGroupBox( this );

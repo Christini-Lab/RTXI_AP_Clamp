@@ -46,6 +46,7 @@ class AddStepInputDialog: public AddStepDialog {
     QString numBeats;
     QString recordIdx;
     QString waitTime;
+    QString digitalOut;
     
     signals:
     void checked( void );
@@ -63,12 +64,13 @@ class AddStepInputDialog: public AddStepDialog {
 class ProtocolStep {
 public:
     enum stepType_t { PACE, STARTVM, STOPVM, AVERAGE, APCLAMP, STARTRECORD, STOPRECORD, WAIT } stepType;    
-    int BCL; // ms
+    double BCL; // ms
     int numBeats;
     int recordIdx;
     int waitTime; // ms
+    int digitalOut;
     
-    ProtocolStep( stepType_t, int, int, int, int );
+    ProtocolStep( stepType_t, double, int, int, int, int );
     ~ProtocolStep( void );
     int stepLength ( double );
 };
@@ -83,7 +85,7 @@ public:
     bool addStep( QWidget * ); // Add a protocol step at the end
     bool addStep( QWidget *, int ); // Add a protocol step at a specific point
     void deleteStep( QWidget *, int ); // Delete a protocol step
-    void saveProtocol( QWidget * ); // Save protocol in xml format
+    QString saveProtocol( QWidget * ); // Save protocol in xml format
     void clearProtocol( void ); // Clears protocol
     QString loadProtocol( QWidget * ); // Build protocol container from xml file, file browser is opened
     void loadProtocol( QWidget *, QString ); // Build protocol container from xml file, file name is parameter
