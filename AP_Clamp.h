@@ -76,7 +76,6 @@ namespace AP_Clamp {
         enum executeMode_t { IDLE, THRESHOLD, PACE, PROTOCOL } executeMode;
         enum protocolMode_t { STEPINIT, EXEC, END } protocolMode;
         bool recording; // True if data recording is recording
-        bool voltageClamp;
         bool vmRecording;
         bool stepInitDone;
         QString loadedFile;
@@ -84,6 +83,7 @@ namespace AP_Clamp {
         bool thresholdOn;
         bool paceOn;
         int stepTracker;
+        int currentTrial;
 
         // States
         double time; // Time (ms)

@@ -347,8 +347,18 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                 Event::Manager::getInstance()->postEventRT(&event);
                 recording = false;
             }
-            protocolOn = false;
-            executeMode = IDLE;
+            if (currentTrial < numTrials) {
+                reset();
+                beatNum = 0; // beatNum is changed at beginning of protocol, so it must start at 0 instead of 1
+                stepTracker = -1; // Used to highlight the current step in list box, -1 to force first step to be highlighted
+                protocolMode = STEPINIT;
+                executeMode = PROTOCOL;
+                currentTrial++;
+            }
+            else {
+                protocolOn = false;
+                executeMode = IDLE;
+            }
         } // end END
             
         break;
@@ -390,7 +400,6 @@ void AP_Clamp::Module::initialize(void){ // Initialize all variables, protocol, 
     
     // Flags
     recording = false;
-    voltageClamp = false;
     loadedFile = "";
     protocolOn = false;
 
@@ -493,12 +502,12 @@ void AP_Clamp::Module::toggleProtocol( void ) {
 				executeMode = IDLE;
         } else {
 			  executeMode = IDLE; // Keep on IDLE until update is finished
-			  voltageClamp = false;
 			  reset();
 			  beatNum = 0; // beatNum is changed at beginning of protocol, so it must start at 0 instead of 1
 			  stepTracker = -1; // Used to highlight the current step in list box, -1 to force first step to be highlighted
 			  protocolMode = STEPINIT; 
 			  executeMode = PROTOCOL;
+              currentTrial = 1;
 			  setActive( true );
 		  }
 	 } else { // Stop protocol, only called when protocol button is unclicked in the middle of a run
