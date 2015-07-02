@@ -53,7 +53,7 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
         numBeatsEdit->setEnabled(true);
         recordIdxEdit->setEnabled(false);
         waitTimeEdit->setEnabled(false);
-        digitalOutEdit->setEnabled(false);
+        digitalOutEdit->setEnabled(true);
         break;
 
     case ProtocolStep::STARTVM:
@@ -77,7 +77,7 @@ void AddStepInputDialog::stepComboBoxUpdate( int selection ) {
         numBeatsEdit->setEnabled(true);
         recordIdxEdit->setEnabled(true);
         waitTimeEdit->setEnabled(false);
-        digitalOutEdit->setEnabled(false);
+        digitalOutEdit->setEnabled(true);
         break;
 
     case ProtocolStep::APCLAMP:
@@ -125,7 +125,7 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
  
     switch( stepComboBox->currentIndex() ) {
     case 0: // Pace
-        if (BCL == "" || numBeats == "") check = false;
+        if (BCL == "" || numBeats == "" ) check = false;
         break;
         
     case 1: // Start Vm Recording
@@ -136,7 +136,7 @@ void AddStepInputDialog::addStepClicked( void ) { // Initializes QStrings and ch
         break;
         
     case 3: // Average Vm
-        if (BCL == "" || numBeats == "" ) check = false;
+        if (BCL == "" || numBeats == "" || digitalOut == "") check = false;
         break;
         
     case 4: // AP Clamp
@@ -450,7 +450,7 @@ QString Protocol::getStepDescription( int stepNumber ) {
         
     case ProtocolStep::PACE:
         type = "Pace ";
-        description = type + ": " + QString::number( step->numBeats ) + " beats - " + QString::number( step->BCL ) + "ms BCL";
+        description = type + ": " + QString::number( step->numBeats ) + " beats - " + QString::number( step->BCL ) + "ms BCL" + "ms | DO(" + QString::number( step->digitalOut ) + ")";
         break;
 
     case ProtocolStep::STARTVM:
@@ -466,7 +466,7 @@ QString Protocol::getStepDescription( int stepNumber ) {
     case ProtocolStep::AVERAGE:
         type = "Average Vm ";
         description = type + ": Index(" + QString::number( step->recordIdx ) + ") | " + QString::number( step->numBeats ) +
-            " beats - " + QString::number( step->BCL ) + "ms BCL";
+            " beats - " + QString::number( step->BCL ) + "ms BCL" + "ms | DO(" + QString::number( step->digitalOut ) + ")";
         break;
 
     case ProtocolStep::APCLAMP:

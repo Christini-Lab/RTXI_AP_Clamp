@@ -173,14 +173,19 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
             calculateAPD( 1 ); // First step of APD calculation called at each stimulus
         }
         
-        // Stimulate cell for stimLength(ms)
-        if ( (stepTime - cycleStartTime) < stimLengthInt )
+        // Stimulate cell for stimLength(ms), digital out on for duration of stimulus
+        if ( (stepTime - cycleStartTime) < stimLengthInt ) {
             outputCurrent = stimMag * 1e-9; // stimMag in nA, convert to A for amplifier
-        else
+            digitalOut = 1;
+        }
+        else {
             outputCurrent = 0;
+            digitalOut = 0;
+        }
 
         // Inject Current
         output( 0 ) = outputCurrent;
+        output( 1 ) = digitalOut;
         //Calulate APD
         calculateAPD( 2 ); // Second step of APD calculation
         break;
@@ -295,11 +300,15 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                         avgCnt++;
                 }
                 
-                // Stimulate cell for stimLength(ms)
-                if ( (stepTime - cycleStartTime) < stimLengthInt )
+                // Stimulate cell for stimLength(ms), digital out on for duration for stimulus
+                if ( (stepTime - cycleStartTime) < stimLengthInt ) {
                     outputCurrent = stimMag * 1e-9;
-                else
+                    digitalOut = stepPtr->digitalOut;
+                }
+                else {
                     outputCurrent = 0;
+                    digitalOut = 0;
+                }
 
                 if ( stepType == ProtocolStep::AVERAGE ) {
                     if ( avgCnt == stepPtr->numBeats ) // Voltage in mV
@@ -309,6 +318,7 @@ void AP_Clamp::Module::execute(void) { // Real-Time Execution
                         avgRecordData->at(stepTime - cycleStartTime) = voltage + avgRecordData->at(stepTime - cycleStartTime);
                 }
                 output(0) = outputCurrent;
+                output(1) = digitalOut;
                 calculateAPD(2);
                 
             } // end if(PACE || AVERAGE)

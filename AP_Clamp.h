@@ -116,6 +116,7 @@ namespace AP_Clamp {
         int BCLInt; // BCL / period (unitless)
         int pBCLInt; // BCL for protocol
         int stimLengthInt; // stimLength / period (unitless)
+        int digitalOut; // Digital output for triggering
 
         // APD Calculation    
         double upstrokeThreshold; // Upstroke threshold for start of AP
